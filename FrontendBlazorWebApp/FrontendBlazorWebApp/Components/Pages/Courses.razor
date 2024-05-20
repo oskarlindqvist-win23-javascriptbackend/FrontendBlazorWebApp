@@ -91,7 +91,7 @@
     {
         try
         {
-            courses = await Http.GetFromJsonAsync<CourseModel[]>("courseprovider-win23jsbackend-oskarl.azurewebsites.net/api/courses");
+            courses = await Http.GetFromJsonAsync<CourseModel[]>(Environment.GetEnvironmentVariable("Courses_APIURI"));
         }
         catch (Exception ex)
         {
