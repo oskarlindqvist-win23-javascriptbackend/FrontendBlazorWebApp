@@ -1,0 +1,365 @@
+﻿@page "/account/details"
+@attribute [Authorize]
+@attribute [StreamRendering]
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity
+@using FrontendBlazorWebApp.Data
+@using System.Net.Http.Headers
+@using Microsoft.EntityFrameworkCore
+@using System.Security.Claims
+
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@rendermode InteractiveServer
+
+<PageTitle>Profile</PageTitle>
+
+@if (user == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <section id="account-details">
+        <aside>
+            <div class="profile-info">
+                <div class="image-profile">
+                    @if (user != null && !string.IsNullOrEmpty(user.ProfileImage))
+                    {
+                        <img src="/images/@user.ProfileImage" alt="@user.FirstName @user.LastName" />
+                    }
+                    else
+                    {
+                        <img src="/images/small-iconimg.svg" alt="@user?.FirstName @user?.LastName" />
+                    }
+                    <EditForm Model="@uploadModel" OnInvalidSubmit="HandleProfileUpload">
+                        <InputFile id="fileUploader" OnChange="HandleFileSelected" hidden />
+                        <label for="fileUploader" class="btn-circle"><i class="fa-solid fa-arrows-rotate"></i></label>
+                    </EditForm>
+                </div>
+                <h5>@user?.FirstName @user?.LastName</h5>
+                <p>@user?.Email</p>
+            </div>
+            <nav>
+                <NavLink class="btn-theme-s" href="/account/details"><i class="fa-solid fa-gear"></i>Account Details</NavLink>
+                <NavLink class="btn-transparent" href="/account/security"><i class="fa-solid fa-lock"></i>Security</NavLink>
+                <NavLink class="btn-transparent" href="/account/savedcourses"><i class="fa-regular fa-file"></i>Saved Courses</NavLink>
+                <NavLink class="btn-transparent"><i class="fa-solid fa-right-from-bracket"></i>Sign out</NavLink>
+            </nav>
+        </aside>
+
+        <div class="details">
+            @if (!string.IsNullOrEmpty(SuccessMessage))
+            {
+                <div id="form-success" class="alert alert-success" role="alert">
+                    @SuccessMessage
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                <div id="form-error" class="alert alert-danger" role="alert">
+                    @ErrorMessage
+                </div>
+            }
+            <section class="basic-info">
+                <EditForm method="post" Model="Input" FormName="profile" OnValidSubmit="OnValidSubmitAsync" novalidate>
+                    <DataAnnotationsValidator />
+
+                    <h2>Account Details</h2>
+                    <h5>Basic Info</h5>
+
+                    <div class="content">
+                        <div id="form-firstname" class="input-group">
+                            <label for="firstname" class="form-label">First name</label>
+                            <input type="text" @bind-value="@Input.FirstName" class="form-control" placeholder="Enter your first name." />
+                            <ValidationMessage For="() => Input.FirstName" />
+                        </div>
+
+                        <div id="form-lastname" class="input-group">
+                            <label for="lastname" class="form-label">Last name</label>
+                            <input type="text" @bind-value="@Input.LastName" class="form-control" placeholder="Enter your last name." />
+                            <ValidationMessage For="() => Input.LastName" />
+                        </div>
+
+                        <div id="form-email" class="input-group">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="text" @bind-value="@Input.Email" class="form-control" placeholder="Enter your email." />
+                            <ValidationMessage For="() => Input.Email" />
+                        </div>
+
+                        <div id="form-phone" class="input-group">
+                            <label for="phone-number" class="form-label">Phone number</label>
+                            <InputText @bind-Value="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number." />
+                            <ValidationMessage For="() => Input.PhoneNumber" />
+                        </div>
+
+                        <div id="form-bio" class="input-group">
+                            <label for="bio" class="form-label">Biography</label>
+                            <input type="text" @bind-value="@Input.Biography" class="form-control" placeholder="Add a short bio..." />
+                        </div>
+
+                        <div id="form-buttons">
+                            <button class="btn-gray" type="reset">Cancel</button>
+                            <button class="btn-theme" type="submit">Save changes</button>
+                        </div>
+                    </div>
+                </EditForm>
+            </section>
+            <hr />
+            <section class="address-info">
+                <EditForm method="post" Model="InputAddress" FormName="address" OnValidSubmit="OnValidSubmitAddressAsync" novalidate>
+                    <DataAnnotationsValidator />
+                    <h5>Address</h5>
+
+                    <div class="content">
+                        <div id="form-addressline-1" class="input-group">
+                            <label for="addressline_1" class="form-label">Address line 1</label>
+                            <input type="text" @bind-value="@InputAddress.AddressLine_1" class="form-control" placeholder="Enter your address line" />
+                            <ValidationMessage For="() => InputAddress.AddressLine_1" />
+                        </div>
+
+                        <div id="form-addressline-2" class="input-group">
+                            <label for="addressline_2" class="form-label">Address line 2</label>
+                            <input type="text" @bind-value="@InputAddress.AddressLine_2" class="form-control" placeholder="Enter your second address line" />
+                        </div>
+
+                        <div id="form-postalcode" class="input-group">
+                            <label for="postalcode" class="form-label">Postal code</label>
+                            <input type="text" @bind-value="@InputAddress.PostalCode" class="form-control" placeholder="Enter your postal code" />
+                            <ValidationMessage For="() => InputAddress.PostalCode" />
+                        </div>
+
+                        <div id="form-city" class="input-group">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" @bind-value="@InputAddress.City" class="form-control" placeholder="Enter your city" />
+                            <ValidationMessage For="() => InputAddress.City" />
+                        </div>
+
+                        <div id="form-buttons">
+                            <button class="btn-gray" type="reset">Cancel</button>
+                            <button class="btn-theme" type="submit">Save changes</button>
+                        </div>
+                    </div>
+                </EditForm>
+            </section>
+        </div>
+    </section>
+}
+
+
+@code {
+    private ApplicationUser user = default!;
+
+    private string? ErrorMessage { get; set; }
+
+    private string? SuccessMessage { get; set; }
+
+    private MultipartFormDataContent uploadModel = new MultipartFormDataContent();
+    private IBrowserFile? selectedFile;
+
+
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+
+    [SupplyParameterFromForm]
+    private AddressModel InputAddress { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUserDataAsync();
+        if (user != null)
+        {
+            Input.FirstName = user.FirstName;
+            Input.LastName = user.LastName;
+            Input.Email = user.Email!;
+            Input.PhoneNumber = user.PhoneNumber;
+            Input.Biography = user.Biography;
+
+            if (user.Address != null)
+            {
+                InputAddress.AddressLine_1 = user.Address.AddressLine_1;
+                InputAddress.AddressLine_2 = user.Address.AddressLine_2;
+                InputAddress.PostalCode = user.Address.PostalCode;
+                InputAddress.City = user.Address.City;
+            }
+        }
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        try
+        {
+            if (user != null)
+            {
+                user.FirstName = Input.FirstName;
+                user.LastName = Input.LastName;
+                user.Email = Input.Email!;
+                user.PhoneNumber = Input.PhoneNumber;
+                user.Biography = Input.Biography;
+
+                var updateUserResult = await UserManager.UpdateAsync(user);
+                if (!updateUserResult.Succeeded)
+                {
+                    ErrorMessage = "Failed to update user information.";
+                }
+                else
+                {
+                    SuccessMessage = "Profile updated successfully.";
+                    await SignInManager.RefreshSignInAsync(user);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"An error occurred while updating the profile: {ex.Message}";
+        }
+    }
+
+    private async Task OnValidSubmitAddressAsync()
+    {
+        try
+        {
+            if (user != null)
+            {
+                if (user.Address == null)
+                {
+                    user.Address = new AddressEntity();
+                }
+                user.AddressId = user.AddressId;
+                user.Address.AddressLine_1 = InputAddress.AddressLine_1;
+                user.Address.AddressLine_2 = InputAddress.AddressLine_2;
+                user.Address.PostalCode = InputAddress.PostalCode;
+                user.Address.City = InputAddress.City;
+
+                var updateUserResult = await UserManager.UpdateAsync(user);
+                if (!updateUserResult.Succeeded)
+                {
+                    ErrorMessage = "Failed to update user information.";
+                }
+                else
+                {
+                    SuccessMessage = "Profile updated successfully.";
+                    await SignInManager.RefreshSignInAsync(user);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"An error occurred while updating the profile: {ex.Message}";
+        }
+    }
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+    }
+
+    private async Task LoadUserDataAsync()
+    {
+        // var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        // var userPrincipal = authState.User;
+
+        // if (userPrincipal.Identity is { IsAuthenticated: true })
+        // {
+        //     user = await UserManager.GetUserAsync(userPrincipal) ?? new ApplicationUser();
+        // }
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var userPrincipal = authState.User;
+
+        if (userPrincipal.Identity is { IsAuthenticated: true })
+        {
+            user = await UserManager.Users
+                .Include(u => u.Address)
+                .FirstOrDefaultAsync(u => u.Id == userPrincipal.FindFirstValue(ClaimTypes.NameIdentifier))
+                ?? new ApplicationUser();
+        }
+    }
+
+    public async Task HandleProfileUpload()
+    {
+        if (selectedFile != null)
+        {
+            using var content = new MultipartFormDataContent();
+            var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 15));
+            fileContent.Headers.ContentType = new MediaTypeHeaderValue(selectedFile.ContentType);
+            content.Add(fileContent, "file", selectedFile.Name);
+
+            try
+            {
+                var response = await Http.PostAsync("https://fileprovider-win23jsbackend-oskarl.azurewebsites.net/api/upload", content);
+                if (response.IsSuccessStatusCode)
+                {
+                    await LoadUserDataAsync();
+                    StateHasChanged();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+    }
+
+    private sealed class InputModel
+    {
+
+        [DataType(DataType.Text)]
+        [Display(Name = "First name")]
+        [Required(ErrorMessage = "First name is required")]
+        [MinLength(2, ErrorMessage = "First name is required")]
+        public string FirstName { get; set; } = null!;
+
+        [DataType(DataType.Text)]
+        [Display(Name = "Last name")]
+        [Required(ErrorMessage = "Last name is required")]
+        [MinLength(2, ErrorMessage = "Last name is required")]
+        public string LastName { get; set; } = null!;
+
+        [Display(Name = "Email address")]
+        [DataType(DataType.EmailAddress)]
+        [Required(ErrorMessage = "Email is required")]
+        [RegularExpression("^[^@\\s]+@[^@\\s]+\\.[^@\\s]{2,}$", ErrorMessage = "Your email address is invalid")]
+        public string Email { get; set; } = null!;
+
+        [Display(Name = "Phone")]
+        [DataType(DataType.PhoneNumber)]
+        public string? PhoneNumber { get; set; }
+
+        [Display(Name = "Bio")]
+        [DataType(DataType.MultilineText)]
+        public string? Biography { get; set; }
+    }
+
+    private class AddressModel
+    {
+        [DataType(DataType.Text)]
+        [Display(Name = "Addressline_1")]
+        [Required(ErrorMessage = "Address is required")]
+        [MinLength(2, ErrorMessage = "Address is required")]
+        public string AddressLine_1 { get; set; } = null!;
+
+        [DataType(DataType.Text)]
+        [Display(Name = "AddressLine_2")]
+        public string? AddressLine_2 { get; set; }
+
+        [Display(Name = "Postal Code")]
+        [DataType(DataType.PostalCode)]
+        [Required(ErrorMessage = "Postal code is required")]
+        public string PostalCode { get; set; } = null!;
+
+        [DataType(DataType.Text)]
+        [Display(Name = "City")]
+        [Required(ErrorMessage = "City is required")]
+        public string City { get; set; } = null!;
+    }
+}

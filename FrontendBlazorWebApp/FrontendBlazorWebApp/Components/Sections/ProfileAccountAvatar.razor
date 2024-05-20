@@ -1,0 +1,19 @@
+﻿@* <AuthorizeView>
+    <Authorized>
+        <div class="profile-info">
+            <div class="image-profile">
+                <img src="/images/@user.ProfileImage" alt="@($"{user.FirstName} {user.LastName}")" />
+                <EditForm enctype="multipart/form-data" method="post" asp-action="UploadImage" asp-controller="Account">
+                    <input id="fileUploader" type="file" name="file" hidden />
+                    <label for="fileUploader" class="btn-circle"><i class="fa-solid fa-arrows-rotate"></i></label>
+                <EditForm />
+            </div>
+            <h5>@($"{Model.ProfileInfo.FirstName} {Model.ProfileInfo.LastName}")</h5>
+            <p>@Model.ProfileInfo.Email</p>
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+
+} *@
