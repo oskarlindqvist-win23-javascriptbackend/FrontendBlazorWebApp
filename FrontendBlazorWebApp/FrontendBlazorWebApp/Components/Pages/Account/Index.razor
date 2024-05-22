@@ -11,7 +11,6 @@
 
 @inject UserManager<ApplicationUser> UserManager
 @inject SignInManager<ApplicationUser> SignInManager
-@inject HttpClient Http
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 @rendermode InteractiveServer
@@ -214,7 +213,7 @@ else
                 else
                 {
                     SuccessMessage = "Profile updated successfully.";
-                    await SignInManager.RefreshSignInAsync(user);
+                    StateHasChanged();
                 }
             }
         }
@@ -248,7 +247,7 @@ else
                 else
                 {
                     SuccessMessage = "Profile updated successfully.";
-                    await SignInManager.RefreshSignInAsync(user);
+                    StateHasChanged();
                 }
             }
         }
