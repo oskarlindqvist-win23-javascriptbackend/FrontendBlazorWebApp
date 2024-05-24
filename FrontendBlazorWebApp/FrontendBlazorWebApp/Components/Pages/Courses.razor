@@ -1,4 +1,7 @@
 ﻿@page "/courses"
+@using FrontendBlazorWebApp.Client.Models
+@using System.Text.Json
+@using System.Text
 @attribute [StreamRendering]
 @attribute [Authorize]
 
@@ -40,30 +43,45 @@
                 foreach (var course in courses)
                 {
                     <div class="grid-item">
-                        @if (course.IsBestSeller)
+                        @if (course.IsBestseller)
                         {
                             <div class="text-top">Best Seller</div>
                         }
                         <a class="button-top" data-courseid="@course.Id" data-bs-toggle="tooltip" data-bs-title="Save Course"><i class="fa-regular fa-bookmark"></i></a>
-                        <img src="@course.ImageUrl" alt="Image of @course.Title">
-                        <a asp-controller="Courses" asp-action="CourseDetails" asp-route-id="@course.Id">
+                        <img src="@course.ImageUri" alt="Image of @course.Title">
+                        <a href="/course-details">
                             <div class="text-info">
                                 <h5>@course.Title</h5>
-                                <p class="creator">By @course.Author</p>
-                                @if (!string.IsNullOrEmpty(course.DiscountPrice) && course.DiscountPrice != "0")
+                                @* <p class="creator">By @course.Authors.Name</p> *@
+                                <p class="creator">By @string.Join(", ", course.Authors!.Select(a => a.Name))</p>
+@*                                 @if (!string.IsNullOrEmpty(course.Prices.Discount) && course.DiscountPrice != "0")
                                 {
                                     <p class="price discount">$@course.DiscountPrice <del>$@course.Price</del></p>
                                 }
                                 else
                                 {
                                     <p class="price">$@course.Price</p>
+                                } *@
+                                @if (course.Prices != null)
+                                {
+                                    @if (course.Prices.Discount > 0)
+                                    {
+                                        <p class="price discount">
+                                            @course.Prices.Currency @course.Prices.Discount
+                                            <del>@course.Prices.Currency @course.Prices.Price</del>
+                                        </p>
+                                    }
+                                    else
+                                    {
+                                        <p class="price">@course.Prices.Currency @course.Prices.Price</p>
+                                    }
                                 }
                                 <div class="clock">
                                     <i class="fa-regular fa-clock"></i>
                                     <p>@course.Hours hours</p>
                                     <div class="thumbs-up">
                                         <i class="fa-regular fa-thumbs-up"></i>
-                                        <p>@course.LikesInProcent% (@course.LikesInNumbers)</p>
+                                        <p>@course.LikesInProcent% (@course.Likes)</p>
                                     </div>
                                 </div>
                             </div>
@@ -73,7 +91,7 @@
             }
             else
             {
-                <div>No courses found!</div>
+                <div>Loading...</div>
             }
         </div>
         <div class="pagination">
@@ -85,44 +103,67 @@
 </section>
 
 @code {
-    private CourseModel[]? courses;
+    private List<CourseCardModel>? courses;
 
     protected override async Task OnInitializedAsync()
     {
-        try
+        var query = new GraphQLQuery
+            {
+                Query = @"
+        query {
+            getCourses {
+                id
+                imageUri
+                isBestseller
+                title
+                authors {
+                    name
+                }
+                prices {
+                    currency
+                    price
+                    discount
+                }
+                starRating
+                reviews
+                likesInProcent
+                likes
+                hours
+            }
+        }"
+            };
+
+        var response = await Http.PostAsJsonAsync("http://localhost:7081/api/graphql", query);
+        if (response.IsSuccessStatusCode)
         {
-            courses = await Http.GetFromJsonAsync<CourseModel[]>(Environment.GetEnvironmentVariable("Courses_APIURI"));
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
+            var result = await response.Content.ReadFromJsonAsync<DynamicGraphQLResponse>();
+            if (result?.Data.TryGetProperty("getCourses", out var coursesJson) == true)
+            {
+                courses = coursesJson.EnumerateArray()
+                    .Select(course => new CourseCardModel
+                        {
+                            Id = course.GetProperty("id").GetString()!,
+                            IsBestseller = course.GetProperty("isBestseller").GetBoolean(),
+                            ImageUri = course.GetProperty("imageUri").GetString(),
+                            Title = course.GetProperty("title").GetString(),
+                            Authors = course.GetProperty("authors").EnumerateArray()
+                                .Select(author => new AuthorModel
+                                {
+                                    Name = author.GetProperty("name").GetString()!,
+                                }).ToList(),
+                            Prices = new PricesModel
+                            {
+                                Currency = course.GetProperty("prices").GetProperty("currency").GetString(),
+                                Price = course.GetProperty("prices").GetProperty("price").GetDecimal(),
+                                Discount = course.GetProperty("prices").GetProperty("discount").GetDecimal()
+                            },
+                            StarRating = course.GetProperty("starRating").GetDecimal(),
+                            Reviews = course.GetProperty("reviews").GetString(),
+                            LikesInProcent = course.GetProperty("likesInProcent").GetString(),
+                            Likes = course.GetProperty("likes").GetString(),
+                            Hours = course.GetProperty("hours").GetString()
+                        }).ToList();
+            }
         }
     }
-
-    private class CourseModel
-    {
-        public int Id { get; set; }
-
-        public string Title { get; set; } = null!;
-
-        public string? Price { get; set; }
-
-        public string? DiscountPrice { get; set; }
-
-        public string? Hours { get; set; }
-
-        public bool IsBestSeller { get; set; } = false;
-
-        public string? LikesInNumbers { get; set; }
-
-        public string? LikesInProcent { get; set; }
-
-        public string? Author { get; set; }
-
-        public string? ImageUrl { get; set; }
-    }
-
-    // private List? <CourseCardModel>? courses;
-
-
 }
