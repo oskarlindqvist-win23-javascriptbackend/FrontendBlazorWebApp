@@ -1,6 +1,7 @@
 using FrontendBlazorWebApp;
 using FrontendBlazorWebApp.Client.Pages;
 using FrontendBlazorWebApp.Components;
+using FrontendBlazorWebApp.Components.Pages;
 using FrontendBlazorWebApp.Data;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -17,7 +18,6 @@ builder.Services.AddRazorComponents()
 builder.Services.AddHttpClient();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
-builder.Services.AddHttpClient();
 
 builder.Services.AddAuthentication(options =>
     {
@@ -70,5 +70,7 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(FrontendBlazorWebApp.Client._Imports).Assembly);
+
+app.MapAdditionalIdentityEndpoints();
 
 app.Run();

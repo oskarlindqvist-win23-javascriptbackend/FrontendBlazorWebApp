@@ -9,9 +9,9 @@
     <div class="container">
         <div class="action-buttons">
             <i class="fa-solid fa-house"></i>
-            <a asp-controller="Home" asp-action="Index">Home</a>
+            <a href="/">Home</a>
             <i class="fa-solid fa-angles-right"></i>
-            <a asp-action="Course" asp-controller="Courses">Courses</a>
+            <a href="/courses">Courses</a>
         </div>
         <div class="header-courses">
             <div class="header-left">
@@ -50,16 +50,7 @@
                         <a onclick="location.href='/courses/@course.Id'">
                             <div class="text-info">
                                 <h5>@course.Title</h5>
-                                @* <p class="creator">By @course.Authors.Name</p> *@
                                 <p class="creator">By @string.Join(", ", course.Authors!.Select(a => a.Name))</p>
-@*                                 @if (!string.IsNullOrEmpty(course.Prices.Discount) && course.DiscountPrice != "0")
-                                {
-                                    <p class="price discount">$@course.DiscountPrice <del>$@course.Price</del></p>
-                                }
-                                else
-                                {
-                                    <p class="price">$@course.Price</p>
-                                } *@
                                 @if (course.Prices != null)
                                 {
                                     @if (course.Prices.Discount > 0)

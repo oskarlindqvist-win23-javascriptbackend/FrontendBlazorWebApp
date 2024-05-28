@@ -14,11 +14,20 @@
 
             .singlecourse-header {
 
-                p {
-                    margin-top: 20px;
+                .description-p {
+                    width: 750px;
+
+                    @media (max-width: 1356px) {
+                        width: 600px;
+                    }
+
+                    p {
+                        margin-top: 20px;
+                    }
                 }
 
                 .learn-what {
+                    margin-top: 30px;
 
                     .checked-info {
                         display: flex;
@@ -75,7 +84,7 @@
                         color: var(--color-black);
 
                         &.discount {
-                            color: red; // Set the color to red for the discounted price
+                            color: red;
 
                             del {
                                 color: var(--color-gray-600);

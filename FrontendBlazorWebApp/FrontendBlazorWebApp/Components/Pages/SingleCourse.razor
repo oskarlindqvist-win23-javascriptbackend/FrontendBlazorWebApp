@@ -1,5 +1,7 @@
 ﻿@page "/courses/{CourseId}"
 
+@attribute [Authorize]
+
 <PageTitle>@course?.Title</PageTitle>
 
 @if (course == null)
@@ -25,11 +27,11 @@ else
                     <div class="seller-square">
                         @if (course.IsBestseller)
                         {
-                            <div class="green-box">Best Seller</div>
+                            <div class="green-box"><p>Best Seller</p></div>
                         }
                         @if (course.IsDigital)
                         {
-                            <div class="white-box">Digital</div>
+                            <div class="white-box"><p>Digital</p></div>
                         }
                     </div>
                     <div class="text-header">
@@ -55,7 +57,7 @@ else
                         </div>
                     </div>
                     <div class="img-text">
-                        <img src="/images/albert-flores.svg" alt="picture of albert flores">
+                        <img src="/images/roundimage.svg" alt="picture of albert flores">
                         <div class="image-text-header">
                             <p class="bold-p">Created by</p>
                             <p class="p-normal">@string.Join(", ", course.Authors!.Select(a => a.Name))</p>
@@ -70,28 +72,37 @@ else
             <div class="description-header">
                 <div class="singlecourse-header">
                     <h1>Course Description</h1>
-                    <p>@course?.Content?.Description</p>
+                    <div class="description-p">
+                        <p>@course?.Content?.Description</p>
+                    </div>
+                    <div class="learn-what">
+                        <h2>What you'll learn</h2>
+                        @if (course?.Content?.Learn != null)
+                        {
+                            @foreach (var learn in course!.Content.Learn)
+                            {
+                                <span class="checked-info"><i class="fa-regular fa-circle-check"></i><p>@learn</p></span>
+                            }
+                        }
+                    </div>
                 </div>
                 <div class="singlecourse-box">
                     <h4>This course includes:</h4>
                     @if (course?.Content?.Includes != null)
                     {
-                        @foreach (var include in course!.Content.Includes)
+                        @foreach (var include in course.Content.Includes)
                         {
-                            <span class="course-include"><i class="fa-regular fa-file"></i><p>@course.Content.Includes</p></span>
+                            <span class="course-include"><i class="fa-solid fa-check"></i><p>@include</p></span>
                         }
                     }
                     <div class="price-box">
                         @if (course?.Prices?.Discount > 0)
                         {
-                            <p class="price discount">
-                                @course.Prices.Currency @course.Prices.Discount
-                                <del>@course.Prices.Currency @course.Prices.Price</del>
-                            </p>
+                            <p class="price discount">@course.Prices.Currency@course.Prices.Discount <del>$@course.Prices.Price</del></p>
                         }
                         else
                         {
-                            <p class="price">@course?.Prices?.Currency @course?.Prices?.Price</p>
+                            <p class="price">@course?.Prices?.Currency@course?.Prices?.Price</p>
                         }
                     </div>
                     <button class="btn-theme-s" href="#">Join course</button>
@@ -165,6 +176,7 @@ else
                     content {
                         description
                         includes
+                        learn
                         programDetails {
                             id
                             title
@@ -214,8 +226,8 @@ else
                             Description = courseJson.GetProperty("content").GetProperty("description").GetString(),
                             Includes = courseJson.GetProperty("content").GetProperty("includes").EnumerateArray()
                                 .Select(include => include.GetString()!).ToArray(),
-                            // Learn = courseJson.GetProperty("content").GetProperty("learn").EnumerateArray()
-                            //     .Select(learn => learn.GetString()!).ToArray(),
+                            Learn = courseJson.GetProperty("content").GetProperty("learn").EnumerateArray()
+                                .Select(learn => learn.GetString()!).ToArray(),
                             ProgramDetails = courseJson.GetProperty("content").GetProperty("programDetails").EnumerateArray()
                                 .Select(detail => new ProgramDetailItemModel
                                 {

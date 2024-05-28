@@ -2292,6 +2292,7 @@ footer .container .social-media {
   display: grid;
   grid-template-columns: auto;
   gap: 25px;
+  cursor: pointer;
 }
 @media (min-width: 768px) {
   .courses .container .courses-square {
@@ -2411,6 +2412,12 @@ footer .container .social-media {
   flex-direction: row;
   gap: 5px;
   margin-left: 25px;
+}
+.courses .container .courses-square .grid-item a {
+  text-decoration: none;
+}
+.courses .container .courses-square .grid-item a:hover {
+  text-decoration: underline;
 }
 .courses .container .pagination {
   display: flex;
@@ -2879,8 +2886,19 @@ footer .container .social-media {
     flex-direction: column;
   }
 }
-.description-course .container .description-header .singlecourse-header p {
+.description-course .container .description-header .singlecourse-header .description-p {
+  width: 750px;
+}
+@media (max-width: 1356px) {
+  .description-course .container .description-header .singlecourse-header .description-p {
+    width: 600px;
+  }
+}
+.description-course .container .description-header .singlecourse-header .description-p p {
   margin-top: 20px;
+}
+.description-course .container .description-header .singlecourse-header .learn-what {
+  margin-top: 30px;
 }
 .description-course .container .description-header .singlecourse-header .learn-what .checked-info {
   display: flex;
@@ -2947,6 +2965,9 @@ footer .container .social-media {
   cursor: pointer;
 }
 
+.program-details .container {
+  margin-top: 60px;
+}
 .program-details .container .number {
   display: flex;
   align-items: center;

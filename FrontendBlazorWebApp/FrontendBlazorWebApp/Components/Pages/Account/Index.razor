@@ -12,6 +12,8 @@
 @inject UserManager<ApplicationUser> UserManager
 @inject SignInManager<ApplicationUser> SignInManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@implements IDisposable
+@inject NavigationManager NavigationManager
 
 @rendermode InteractiveServer
 
@@ -43,11 +45,22 @@ else
                 <h5>@user?.FirstName @user?.LastName</h5>
                 <p>@user?.Email</p>
             </div>
-            <nav>
+@*             <nav>
                 <NavLink class="btn-theme-s" href="/account/details"><i class="fa-solid fa-gear"></i>Account Details</NavLink>
                 <NavLink class="btn-transparent" href="/account/security"><i class="fa-solid fa-lock"></i>Security</NavLink>
                 <NavLink class="btn-transparent" href="/account/savedcourses"><i class="fa-regular fa-file"></i>Saved Courses</NavLink>
                 <NavLink class="btn-transparent"><i class="fa-solid fa-right-from-bracket"></i>Sign out</NavLink>
+            </nav> *@
+            <nav>
+                <NavLink href="/account/details" class="btn-theme-s" Match="NavLinkMatch.All"><i class="fa-regular fa-gear"></i><span>Account Details</span></NavLink>
+                <NavLink href="/account/notifications" class="btn-transparent"><i class="fa-regular fa-bell"></i><span>Notifications</span></NavLink>
+                <form action="/account/signout" method="post">
+                    <AntiforgeryToken />
+                    <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                    <button type="submit" class="btn-transparent">
+                        <i aria-hidden="true" class="fa-solid fa-right-from-bracket"></i><span>Sign Out</span>
+                    </button>
+                </form>
             </nav>
         </aside>
 
@@ -161,7 +174,7 @@ else
     private MultipartFormDataContent uploadModel = new MultipartFormDataContent();
     private IBrowserFile? selectedFile;
 
-
+    private string? currentUrl;
 
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
@@ -174,6 +187,9 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+
         await LoadUserDataAsync();
         if (user != null)
         {
@@ -193,6 +209,17 @@ else
         }
     }
 
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+
     private async Task OnValidSubmitAsync()
     {
         try
@@ -202,6 +229,8 @@ else
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
                 user.Email = Input.Email!;
+                user.UserName = Input.Email;
+                user.NormalizedUserName = Input.Email;
                 user.PhoneNumber = Input.PhoneNumber;
                 user.Biography = Input.Biography;
 
