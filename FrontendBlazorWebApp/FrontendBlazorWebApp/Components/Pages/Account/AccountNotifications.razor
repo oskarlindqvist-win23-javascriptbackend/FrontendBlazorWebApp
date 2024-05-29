@@ -1,0 +1,256 @@
+﻿@page "/account/notifications"
+@using FrontendBlazorWebApp.Data
+@using System.Diagnostics
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@using Newtonsoft.Json
+@using System.Net.Http.Headers
+@using System.Security.Claims
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<ApplicationUser> UserManager
+
+@implements IDisposable
+@inject NavigationManager NavigationManager
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+
+@attribute [Authorize]
+@attribute [StreamRendering]
+
+@rendermode InteractiveServer
+
+<PageTitle>Notifications</PageTitle>
+
+@if (user == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <section id="account-notifications">
+        <aside>
+            <div class="profile-info">
+                <div class="image-profile">
+                    @if (user != null && !string.IsNullOrEmpty(user.ProfileImage))
+                    {
+                        <img src="/images/@user.ProfileImage" alt="@user.FirstName @user.LastName" />
+                    }
+                    else
+                    {
+                        <img src="/images/roundimage.svg" alt="@user?.FirstName @user?.LastName" />
+                    }
+                    <EditForm Model="@uploadModel" OnInvalidSubmit="HandleProfileUpload">
+                        <InputFile id="fileUploader" OnChange="HandleFileSelected" hidden />
+                        <label for="fileUploader" class="btn-circle"><i class="fa-solid fa-arrows-rotate"></i></label>
+                    </EditForm>
+                </div>
+                <h5>@user?.FirstName @user?.LastName</h5>
+                <p>@user?.Email</p>
+            </div>
+            <nav>
+                <NavLink href="/account/details" class="btn-theme-s" Match="NavLinkMatch.All"><i class="fa-regular fa-gear"></i><span>Account Details</span></NavLink>
+                <NavLink href="/account/notifications" class="btn-transparent"><i class="fa-regular fa-bell"></i><span>Notifications</span></NavLink>
+                <form action="/account/signout" method="post">
+                    <AntiforgeryToken />
+                    <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                    <button type="submit" class="btn-transparent">
+                        <i aria-hidden="true" class="fa-solid fa-right-from-bracket"></i><span>Sign Out</span>
+                    </button>
+                </form>
+            </nav>
+        </aside>
+
+       <div class="details">
+            <section class="basic-info">
+                <div class="notifications-preview">
+                    <h2>Notifications</h2>
+                    @if (!string.IsNullOrEmpty(SuccessMessage))
+                    {
+                        <div id="form-success" class="alert alert-success" role="alert">
+                            @SuccessMessage
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(ErrorMessage))
+                    {
+                        <div id="form-error" class="alert alert-danger" role="alert">
+                            @ErrorMessage
+                        </div>
+                    }
+                    <EditForm Model="formModel" FormName="newsletter" OnValidSubmit="OnValidSubmitAsync" class="row g-4 notifications-form" novalidate>
+                        <div class="col-xl-6">
+                            <label class="form-label notification-email">Preferred email for notifications</label>
+                            <input type="email" class="form-control" @bind-value="formModel.Email" placeholder="example@gmail.com" />
+                        </div>
+
+                        <div id="subscribe-switch" class="btn-switch">
+                            <label class="switch" for="subscribe-mode">
+                                <input type="checkbox" id="subscribe-mode" @bind-value="formModel.Newsletter" />
+                                <span class="slider round"></span>
+                            </label>
+                            <div class="switch-description">
+                                <label>Subscribe to Newsletter</label>
+                                <span>Nec, posuere non felis duis massa vitae aliquet interdum scelerisque. Neque ullamcorper.</span>
+                            </div>
+                        </div>
+
+                        <div class="notifications-buttons">
+                            <div class="col-auto">
+                                <button type="reset" class="btn-gray">Cancel</button>
+                            </div>
+                            <div class="col-auto">
+                                <button type="submit" class="btn-theme">Save Changes</button>
+                            </div>
+                        </div>
+                    </EditForm>
+                </div>
+            </section>
+        </div>
+    </section>
+}
+
+@code {
+    private string? currentUrl;
+
+    private ApplicationUser user = default!;
+
+    private FormModel formModel = new FormModel();
+
+    private string? ErrorMessage { get; set; }
+    private string? SuccessMessage { get; set; }
+
+    private MultipartFormDataContent uploadModel = new MultipartFormDataContent();
+    private IBrowserFile? selectedFile;
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+            NavigationManager.LocationChanged += OnLocationChanged;
+
+            await LoadUserDataAsync();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error fetching user information in OnInitializedAsync: {ex.Message}");
+        }
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        string url = formModel.Newsletter ? "http://localhost:7098/api/Subscribe" : "http://localhost:7098/api/Unsubscribe";
+        var subscribeEmail = new { Email = formModel.Email };
+
+        try
+        {
+            var result = await Http.PostAsJsonAsync(url, subscribeEmail);
+            var responseContent = await result.Content.ReadAsStringAsync();
+
+            try
+            {
+                var apiResponse = JsonConvert.DeserializeObject<ApiResponse>(responseContent);
+
+                if (apiResponse != null)
+                {
+                    if (result.IsSuccessStatusCode)
+                    {
+                        SuccessMessage = apiResponse.Message;
+                    }
+                    else
+                    {
+                        ErrorMessage = apiResponse.Message;
+                    }
+                }
+                else
+                {
+                    ErrorMessage = "Invalid response format.";
+                }
+            }
+            catch (JsonException jsonEx)
+            {
+                ErrorMessage = $"Error parsing JSON response: {jsonEx.Message}";
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+    }
+
+    private async Task LoadUserDataAsync()
+    {
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var userPrincipal = authState.User;
+
+            if (userPrincipal.Identity is { IsAuthenticated: true })
+            {
+                user = await UserManager.Users
+                    .Include(u => u.Address)
+                    .FirstOrDefaultAsync(u => u.Id == userPrincipal.FindFirstValue(ClaimTypes.NameIdentifier))
+                    ?? new ApplicationUser();
+            }
+            else
+            {
+                Debug.WriteLine($"Error in LoadUserDataAsync");
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error fetching user information: {ex.Message}");
+        }
+
+    }
+
+    public async Task HandleProfileUpload()
+    {
+        if (selectedFile != null)
+        {
+            using var content = new MultipartFormDataContent();
+            var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 15));
+            fileContent.Headers.ContentType = new MediaTypeHeaderValue(selectedFile.ContentType);
+            content.Add(fileContent, "file", selectedFile.Name);
+
+            try
+            {
+                var response = await Http.PostAsync(Environment.GetEnvironmentVariable("FILEPROVIDER_UPLOAD_URI"), content);
+                if (response.IsSuccessStatusCode)
+                {
+                    await LoadUserDataAsync();
+                    StateHasChanged();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+    }
+
+    public class FormModel
+    {
+        public string Email { get; set; } = null!;
+        public bool Newsletter { get; set; }
+    }
+}

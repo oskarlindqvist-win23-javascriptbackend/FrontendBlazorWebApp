@@ -1,0 +1,176 @@
+#account-details {
+    display: grid;
+    grid-template-columns: 2fr 5fr;
+    gap: 150px;
+    margin-bottom: 70px;
+
+    @media(max-width: 1130px) {
+        display: flex;
+        flex-direction: column;
+    }
+
+    aside {
+        border-right: 1px solid var(--color-gray-300);
+        padding-right: 20px;
+
+        @media(max-width: 1130px) {
+            border-right: none;
+        }
+
+        .profile-info {
+            margin: 20px;
+            text-align: center;
+            position: relative;
+
+            .image-profile {
+                position: relative;
+                display: inline-block;
+
+                img {
+                    width: 120px;
+                    height: 120px;
+                    border-radius: 50%;
+                    overflow: hidden;
+                }
+
+                .btn-circle {
+                    @include shadow-s;
+                    position: absolute;
+                    bottom: 0;
+                    right: 0;
+                    background-color: var(--color-white);
+                    border: 1px solid var(--color-gray-300);
+                    border-radius: 100%;
+                    width: 40px;
+                    height: 40px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+
+                    i {
+                        color: var(--color-gray-800);
+                        font-size: 16px;
+                        font-weight: 600;
+                    }
+
+                    &:hover {
+                        text-decoration: none;
+                        background: var(--color-gray-600);
+
+                        i {
+                            color: var(--color-white);
+                        }
+                    }
+                }
+            }
+
+            h5 {
+                margin-top: 15px;
+                margin-bottom: 0;
+            }
+
+            p {
+                @include text-m;
+            }
+        }
+
+        nav {
+            margin-top: 50px;
+            text-align: left;
+
+            a {
+                margin-left: 10px 0;
+                text-align: left;
+                justify-content: flex-start;
+            }
+
+            .btn-theme-s {
+                text-align: left;
+                justify-content: flex-start;
+                margin-bottom: 10px;
+            }
+        }
+    }
+
+    .details {
+        margin-top: 50px;
+        width: 100%;
+
+        #form-success {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+        }
+
+        .basic-info {
+
+            .notifications-preview {
+                padding: 50px 20px;
+                display: flex;
+                flex-direction: column;
+
+                @include lg {
+                    padding: 50px 0 0 100px;
+                    border-left: 1px solid var(--color-gray-300);
+                }
+
+                h2 {
+                    @include h3;
+                    padding-bottom: 20px;
+
+                    @include lg {
+                        @include h2;
+                    }
+                }
+
+                .notifications-form {
+                    .notification-email {
+                        @include text-m;
+                        color: var(--color-gray-900);
+                        font-weight: 600;
+                    }
+
+                    #subscribe-switch {
+                        display: flex;
+                        gap: 20px;
+
+                        .switch {
+                            & input {
+                                &:checked + .slider {
+                                    background-color: var(--color-success);
+                                }
+
+                                &:focus + .slider {
+                                    box-shadow: 0 0 1px var(--color-success);
+                                }
+                            }
+                        }
+
+                        .switch-description {
+                            display: flex;
+                            flex-direction: column;
+
+                            label {
+                                @include text-m;
+                                color: var(--color-gray-900);
+                                font-weight: 600;
+                            }
+
+                            span {
+                                @include text-s;
+                                color: var(--color-gray-600);
+                            }
+                        }
+                    }
+
+                    .notifications-buttons {
+                        margin-top: 250px;
+                        display: flex;
+                        gap: 15px;
+                    }
+                }
+            }
+        }
+    }
+}
