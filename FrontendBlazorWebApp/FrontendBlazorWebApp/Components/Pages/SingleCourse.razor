@@ -112,21 +112,36 @@ else
     </section>
     <section class="program-details">
         <div class="container">
-            <h1>Program Details</h1>
-            @if (course?.Content?.ProgramDetails != null)
+            @if (course?.ProgramDetails != null)
             {
-                @foreach (var programdetail in course.Content.ProgramDetails)
-                {
-                    <div class="number">
-                        <div class="circle"><p>@programdetail.Id</p></div>
-                        <div class="square-text-details">
-                            <div class="circle-text">
-                                <h4>@programdetail.Title</h4>
-                                <p>@programdetail.Description</p>
-                            </div>
+                <h1>Program Details</h1>
+                <div class="number">
+                    <div class="circle"><p>1</p></div>
+                    <div class="square-text-details">
+                        <div class="circle-text">
+                            <h4>@course.ProgramDetails.Title_1</h4>
+                            <p>@course.ProgramDetails.Description_1</p>
                         </div>
                     </div>
-                }
+                </div>
+                <div class="number">
+                    <div class="circle"><p>2</p></div>
+                    <div class="square-text-details">
+                        <div class="circle-text">
+                            <h4>@course.ProgramDetails.Title_2</h4>
+                            <p>@course.ProgramDetails.Description_2</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="number">
+                    <div class="circle"><p>3</p></div>
+                    <div class="square-text-details">
+                        <div class="circle-text">
+                            <h4>@course.ProgramDetails.Title_3</h4>
+                            <p>@course.ProgramDetails.Description_3</p>
+                        </div>
+                    </div>
+                </div>
             }
         </div>
     </section>
@@ -177,11 +192,14 @@ else
                         description
                         includes
                         learn
-                        programDetails {
-                            id
-                            title
-                            description
-                        }
+                    }
+                    programDetails {
+                        title_1
+                        description_1
+                        title_2
+                        description_2
+                        title_3
+                        description_3
                     }
                 }
             }",
@@ -228,13 +246,15 @@ else
                                 .Select(include => include.GetString()!).ToArray(),
                             Learn = courseJson.GetProperty("content").GetProperty("learn").EnumerateArray()
                                 .Select(learn => learn.GetString()!).ToArray(),
-                            ProgramDetails = courseJson.GetProperty("content").GetProperty("programDetails").EnumerateArray()
-                                .Select(detail => new ProgramDetailItemModel
-                                {
-                                    Id = detail.GetProperty("id").GetInt32(),
-                                    Title = detail.GetProperty("title").GetString()!,
-                                    Description = detail.GetProperty("description").GetString()
-                                }).ToList()
+                        },
+                        ProgramDetails = new ProgramDetailItemModel
+                        {
+                            Title_1 = courseJson.GetProperty("programDetails").GetProperty("title_1").GetString(),
+                            Description_1 = courseJson.GetProperty("programDetails").GetProperty("description_1").GetString(),
+                            Title_2 = courseJson.GetProperty("programDetails").GetProperty("title_2").GetString(),
+                            Description_2 = courseJson.GetProperty("programDetails").GetProperty("description_2").GetString(),
+                            Title_3 = courseJson.GetProperty("programDetails").GetProperty("title_3").GetString(),
+                            Description_3 = courseJson.GetProperty("programDetails").GetProperty("description_3").GetString(),
                         }
                     };
             }

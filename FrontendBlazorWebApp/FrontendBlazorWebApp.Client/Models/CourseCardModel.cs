@@ -21,6 +21,7 @@ public class CourseCardModel
     public virtual List<AuthorModel>? Authors { get; set; }
     public virtual PricesModel? Prices { get; set; }
     public virtual ContentModel? Content { get; set; }
+    public virtual ProgramDetailItemModel? ProgramDetails { get; set; }
 }
 
 public class AuthorModel
@@ -33,7 +34,6 @@ public class ContentModel
     public string? Description { get; set; }
     public string[]? Includes { get; set; }
     public string[]? Learn { get; set; }
-    public virtual List<ProgramDetailItemModel>? ProgramDetails { get; set; }
 }
 
 public class PricesModel
@@ -45,8 +45,11 @@ public class PricesModel
 
 public class ProgramDetailItemModel
 {
-    public int Id { get; set; }
-    public string? Title { get; set; }
-    public string? Description { get; set; }
+    public string? Title_1 { get; set; }
+    public string? Description_1 { get; set; }
+    public string? Title_2 { get; set; }
+    public string? Description_2 { get; set; }
+    public string? Title_3 { get; set; }
+    public string? Description_3 { get; set; }
 }
 
