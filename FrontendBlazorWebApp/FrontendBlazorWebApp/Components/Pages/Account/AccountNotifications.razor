@@ -158,7 +158,7 @@ else
 
     private async Task OnValidSubmitAsync()
     {
-        string url = formModel.Newsletter ? "http://localhost:7098/api/Subscribe" : "http://localhost:7098/api/Unsubscribe";
+        string url = formModel.Newsletter ? "https://newsletterprovider-oskarl.azurewebsites.net/api/Subscribe?code=N5eTj6GP_b3iu8MpMQ3hsrLo9KvDehna97EOqiZfregTAzFuI-3wVw%3D%3D" : "https://newsletterprovider-oskarl.azurewebsites.net/api/Unsubscribe?code=fHZbKdYTMC9Crm9tl7DMTFVNshAtazy3MuzH2udxwHzwAzFubyFcNA%3D%3D";
         var subscribeEmail = new { Email = formModel.Email };
 
         try
