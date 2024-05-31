@@ -37,7 +37,7 @@ else
                     }
                     else
                     {
-                        <img src="/images/roundimage.svg" alt="@user?.FirstName @user?.LastName" />
+                        <img src="/images/small-iconimg.svg" alt="@user?.FirstName @user?.LastName" />
                     }
                     <EditForm Model="@uploadModel" OnInvalidSubmit="HandleProfileUpload">
                         <InputFile id="fileUploader" OnChange="HandleFileSelected" hidden />
@@ -48,8 +48,8 @@ else
                 <p>@user?.Email</p>
             </div>
             <nav>
-                <NavLink href="/account/details" class="btn-theme-s" Match="NavLinkMatch.All"><i class="fa-regular fa-gear"></i><span>Account Details</span></NavLink>
-                <NavLink href="/account/notifications" class="btn-transparent"><i class="fa-regular fa-bell"></i><span>Notifications</span></NavLink>
+                <NavLink href="/account/details" class="btn-transparent" Match="NavLinkMatch.All"><i class="fa-regular fa-gear"></i><span>Account Details</span></NavLink>
+                <NavLink href="/account/notifications" class="btn-theme-s"><i class="fa-regular fa-bell"></i><span>Notifications</span></NavLink>
                 <form action="/account/signout" method="post">
                     <AntiforgeryToken />
                     <input type="hidden" name="ReturnUrl" value="@currentUrl" />
@@ -60,25 +60,27 @@ else
             </nav>
         </aside>
 
-       <div class="details">
-            <section class="basic-info">
-                <div class="notifications-preview">
-                    <h2>Notifications</h2>
-                    @if (!string.IsNullOrEmpty(SuccessMessage))
-                    {
-                        <div id="form-success" class="alert alert-success" role="alert">
-                            @SuccessMessage
-                        </div>
-                    }
+        <div class="details">
+            @if (!string.IsNullOrEmpty(SuccessMessage))
+            {
+                <div id="form-success" class="alert alert-success" role="alert">
+                    @SuccessMessage
+                </div>
+            }
 
-                    @if (!string.IsNullOrEmpty(ErrorMessage))
-                    {
-                        <div id="form-error" class="alert alert-danger" role="alert">
-                            @ErrorMessage
-                        </div>
-                    }
-                    <EditForm Model="formModel" FormName="newsletter" OnValidSubmit="OnValidSubmitAsync" class="row g-4 notifications-form" novalidate>
-                        <div class="col-xl-6">
+            @if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                <div id="form-error" class="alert alert-danger" role="alert">
+                    @ErrorMessage
+                </div>
+            }
+            <section class="basic-info">
+                <EditForm Model="formModel" FormName="newsletter" OnValidSubmit="OnValidSubmitAsync" novalidate>
+
+                    <h2>Notifications</h2>
+
+                    <div class="content">
+                        <div id="form-email" class="input-group">
                             <label class="form-label notification-email">Preferred email for notifications</label>
                             <input type="email" class="form-control" @bind-value="formModel.Email" placeholder="example@gmail.com" />
                         </div>
@@ -94,17 +96,14 @@ else
                             </div>
                         </div>
 
-                        <div class="notifications-buttons">
-                            <div class="col-auto">
-                                <button type="reset" class="btn-gray">Cancel</button>
-                            </div>
-                            <div class="col-auto">
-                                <button type="submit" class="btn-theme">Save Changes</button>
-                            </div>
+                        <div id="form-buttons">
+                            <button class="btn-gray" type="reset">Cancel</button>
+                            <button class="btn-theme" type="submit">Save changes</button>
                         </div>
-                    </EditForm>
-                </div>
+                    </div>
+                </EditForm>
             </section>
+            <hr />
         </div>
     </section>
 }

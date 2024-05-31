@@ -45,12 +45,6 @@ else
                 <h5>@user?.FirstName @user?.LastName</h5>
                 <p>@user?.Email</p>
             </div>
-@*             <nav>
-                <NavLink class="btn-theme-s" href="/account/details"><i class="fa-solid fa-gear"></i>Account Details</NavLink>
-                <NavLink class="btn-transparent" href="/account/security"><i class="fa-solid fa-lock"></i>Security</NavLink>
-                <NavLink class="btn-transparent" href="/account/savedcourses"><i class="fa-regular fa-file"></i>Saved Courses</NavLink>
-                <NavLink class="btn-transparent"><i class="fa-solid fa-right-from-bracket"></i>Sign out</NavLink>
-            </nav> *@
             <nav>
                 <NavLink href="/account/details" class="btn-theme-s" Match="NavLinkMatch.All"><i class="fa-regular fa-gear"></i><span>Account Details</span></NavLink>
                 <NavLink href="/account/notifications" class="btn-transparent"><i class="fa-regular fa-bell"></i><span>Notifications</span></NavLink>

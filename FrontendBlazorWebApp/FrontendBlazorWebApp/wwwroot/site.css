@@ -4009,43 +4009,43 @@ footer .container .social-media {
     justify-content: center;
   }
 }
-#account-details {
+#account-notifications {
   display: grid;
   grid-template-columns: 2fr 5fr;
   gap: 150px;
   margin-bottom: 70px;
 }
 @media (max-width: 1130px) {
-  #account-details {
+  #account-notifications {
     display: flex;
     flex-direction: column;
   }
 }
-#account-details aside {
+#account-notifications aside {
   border-right: 1px solid var(--color-gray-300);
   padding-right: 20px;
 }
 @media (max-width: 1130px) {
-  #account-details aside {
+  #account-notifications aside {
     border-right: none;
   }
 }
-#account-details aside .profile-info {
+#account-notifications aside .profile-info {
   margin: 20px;
   text-align: center;
   position: relative;
 }
-#account-details aside .profile-info .image-profile {
+#account-notifications aside .profile-info .image-profile {
   position: relative;
   display: inline-block;
 }
-#account-details aside .profile-info .image-profile img {
+#account-notifications aside .profile-info .image-profile img {
   width: 120px;
   height: 120px;
   border-radius: 50%;
   overflow: hidden;
 }
-#account-details aside .profile-info .image-profile .btn-circle {
+#account-notifications aside .profile-info .image-profile .btn-circle {
   box-shadow: 0px 2px 6.4px -1px rgba(19, 16, 34, 0.03), 0px 4.4px 12px -1px rgba(19, 16, 34, 0.06);
   position: absolute;
   bottom: 0;
@@ -4059,127 +4059,95 @@ footer .container .social-media {
   justify-content: center;
   align-items: center;
 }
-#account-details aside .profile-info .image-profile .btn-circle i {
+#account-notifications aside .profile-info .image-profile .btn-circle i {
   color: var(--color-gray-800);
   font-size: 16px;
   font-weight: 600;
 }
-#account-details aside .profile-info .image-profile .btn-circle:hover {
+#account-notifications aside .profile-info .image-profile .btn-circle:hover {
   text-decoration: none;
   background: var(--color-gray-600);
 }
-#account-details aside .profile-info .image-profile .btn-circle:hover i {
+#account-notifications aside .profile-info .image-profile .btn-circle:hover i {
   color: var(--color-white);
 }
-#account-details aside .profile-info h5 {
+#account-notifications aside .profile-info h5 {
   margin-top: 15px;
   margin-bottom: 0;
 }
-#account-details aside .profile-info p {
+#account-notifications aside .profile-info p {
   line-height: 160%;
   font-weight: 400;
   color: var(--color-gray-700);
   font-family: "Manrope", sans-serif;
   font-size: 16px !important;
 }
-.dark #account-details aside .profile-info p {
+.dark #account-notifications aside .profile-info p {
   color: var(--color-white);
 }
-#account-details aside nav {
+#account-notifications aside nav {
   margin-top: 50px;
   text-align: left;
 }
-#account-details aside nav a {
+#account-notifications aside nav a {
   margin-left: 10px 0;
   text-align: left;
   justify-content: flex-start;
 }
-#account-details aside nav .btn-theme-s {
+#account-notifications aside nav .btn-theme-s {
   text-align: left;
   justify-content: flex-start;
   margin-bottom: 10px;
 }
-#account-details .details {
+#account-notifications .details {
   margin-top: 50px;
   width: 100%;
 }
-#account-details .details #form-success {
+#account-notifications .details #form-success {
   display: flex;
   justify-content: center;
   align-items: center;
   font-weight: 700;
 }
-#account-details .details .basic-info .notifications-preview {
-  padding: 50px 20px;
-  display: flex;
-  flex-direction: column;
+#account-notifications .details .basic-info form {
+  padding: 1rem;
 }
-@media (min-width: 992px) {
-  #account-details .details .basic-info .notifications-preview {
-    padding: 50px 0 0 100px;
-    border-left: 1px solid var(--color-gray-300);
+#account-notifications .details .basic-info form h2 {
+  margin-bottom: 30px;
+}
+#account-notifications .details .basic-info form .content {
+  display: grid;
+  gap: 1rem 2rem;
+  grid-template-columns: 1fr;
+  grid-template-areas: "email" "subscribe-switch" "buttons";
+}
+@media (max-width: 538px) {
+  #account-notifications .details .basic-info form .content {
+    display: flex;
+    flex-direction: column;
   }
 }
-#account-details .details .basic-info .notifications-preview h2 {
-  line-height: 160%;
-  font-weight: 400;
-  color: var(--color-gray-700);
-  font-family: "Manrope", sans-serif;
-  font-weight: 800;
-  color: var(--color-gray-900);
-  font-size: 28px !important;
-  padding-bottom: 20px;
+#account-notifications .details .basic-info form .content .form-control {
+  width: 50%;
 }
-.dark #account-details .details .basic-info .notifications-preview h2 {
-  color: var(--color-white);
+#account-notifications .details .basic-info form .content #form-email {
+  grid-area: email;
 }
-.dark #account-details .details .basic-info .notifications-preview h2 {
-  color: var(--color-white);
-}
-@media (min-width: 992px) {
-  #account-details .details .basic-info .notifications-preview h2 {
-    line-height: 160%;
-    font-weight: 400;
-    color: var(--color-gray-700);
-    font-family: "Manrope", sans-serif;
-    font-weight: 800;
-    color: var(--color-gray-900);
-    font-size: 32px !important;
-  }
-  .dark #account-details .details .basic-info .notifications-preview h2 {
-    color: var(--color-white);
-  }
-  .dark #account-details .details .basic-info .notifications-preview h2 {
-    color: var(--color-white);
-  }
-}
-#account-details .details .basic-info .notifications-preview .notifications-form .notification-email {
-  line-height: 160%;
-  font-weight: 400;
-  color: var(--color-gray-700);
-  font-family: "Manrope", sans-serif;
-  font-size: 16px !important;
-  color: var(--color-gray-900);
-  font-weight: 600;
-}
-.dark #account-details .details .basic-info .notifications-preview .notifications-form .notification-email {
-  color: var(--color-white);
-}
-#account-details .details .basic-info .notifications-preview .notifications-form #subscribe-switch {
+#account-notifications .details .basic-info form .content #subscribe-switch {
   display: flex;
   gap: 20px;
 }
-#account-details .details .basic-info .notifications-preview .notifications-form #subscribe-switch .switch input:checked + .slider {
-  background-color: var(--color-success);
+#account-notifications .details .basic-info form .content #subscribe-switch .switch input:checked + .slider {
+  background-color: #22C55E;
 }
-#account-details .details .basic-info .notifications-preview .notifications-form #subscribe-switch .switch input:focus + .slider {
-  box-shadow: 0 0 1px var(--color-success);
+#account-notifications .details .basic-info form .content #subscribe-switch .switch input:focus + .slider {
+  box-shadow: 0 0 1px #22C55E;
 }
-#account-details .details .basic-info .notifications-preview .notifications-form #subscribe-switch .switch-description {
+#account-notifications .details .basic-info form .content #subscribe-switch .switch-description {
   display: flex;
   flex-direction: column;
 }
-#account-details .details .basic-info .notifications-preview .notifications-form #subscribe-switch .switch-description label {
+#account-notifications .details .basic-info form .content #subscribe-switch .switch-description label {
   line-height: 160%;
   font-weight: 400;
   color: var(--color-gray-700);
@@ -4188,10 +4156,10 @@ footer .container .social-media {
   color: var(--color-gray-900);
   font-weight: 600;
 }
-.dark #account-details .details .basic-info .notifications-preview .notifications-form #subscribe-switch .switch-description label {
+.dark #account-notifications .details .basic-info form .content #subscribe-switch .switch-description label {
   color: var(--color-white);
 }
-#account-details .details .basic-info .notifications-preview .notifications-form #subscribe-switch .switch-description span {
+#account-notifications .details .basic-info form .content #subscribe-switch .switch-description span {
   line-height: 160%;
   font-weight: 400;
   color: var(--color-gray-700);
@@ -4199,13 +4167,15 @@ footer .container .social-media {
   font-size: 14px !important;
   color: var(--color-gray-600);
 }
-.dark #account-details .details .basic-info .notifications-preview .notifications-form #subscribe-switch .switch-description span {
+.dark #account-notifications .details .basic-info form .content #subscribe-switch .switch-description span {
   color: var(--color-white);
 }
-#account-details .details .basic-info .notifications-preview .notifications-form .notifications-buttons {
-  margin-top: 250px;
+#account-notifications .details .basic-info form .content #form-buttons {
+  grid-area: buttons;
+  margin: 20px 0;
   display: flex;
-  gap: 15px;
+  gap: 20px;
+  margin-top: 150px;
 }
 
 #blazor-error-ui {
